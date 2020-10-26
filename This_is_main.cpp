@@ -36,5 +36,6 @@ int main()
 	{
 		all_student[i].Print();
 	}
+	
 	return 0;
 }
