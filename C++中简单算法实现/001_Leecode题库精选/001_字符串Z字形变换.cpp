@@ -20,7 +20,7 @@ string Array(string s, int numRows)
         if (curRow == 0 || curRow == numRows - 1) goingDown = !goingDown;
         curRow += goingDown ? 1 : -1;
     }
-    string re t;
+    string ret;
     for (string row : rows) ret += row;
     return ret;
 }
