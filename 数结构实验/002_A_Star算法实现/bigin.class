@@ -1,0 +1,7 @@
+package project;
+
+public class bigin {
+    public static void main(String[] args) {
+        Main2 main=new Main2();
+    }
+}
