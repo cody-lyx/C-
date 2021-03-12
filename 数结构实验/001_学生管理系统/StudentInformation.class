@@ -1,0 +1,121 @@
+package Main;
+
+public class StudentInformation {
+    private String Name; //姓名
+    private int StudentID;   //学号
+    private static int i=0;
+    private String Specialty;   //专业
+    private double Math;    //数学成绩
+    private double English;     //英语成绩
+    private double Political;   //政治成绩
+    private double ProfessionalCourseResults;   //专业课成绩
+    private double TotalScore;//总分
+    private int Rank;//排名
+
+    public static void setI(int i) {
+        StudentInformation.i = i;
+    }
+
+    public void print(){
+        //依据：学号，姓名，专业，数学，英语，政治，专业课成绩，总分，排名
+
+        System.out.println(StudentID+"\t\t"+Name+"\t\t"+Specialty+"\t\t"+Math+"\t\t"+English+"\t\t"+Political+"\t\t"+ProfessionalCourseResults+"\t\t"+TotalScore+"\t\t"+Rank);
+    }
+
+    public int getRank() {
+        return Rank;
+    }
+
+    public void setRank(int rank) {
+        Rank = rank;
+    }
+
+    public double getTotalScore() {
+        return TotalScore;
+    }
+    
+    public int getStudentID() {
+        return StudentID;
+    }
+
+    public  void setStudentID(int studentID) {
+        StudentID = studentID;
+    }
+
+    public void setStudentID(){
+        this.StudentID=StudentID+i;
+        i++;
+    }
+
+    public void setTotalScore(double totalScore) {
+        TotalScore = totalScore;
+    }
+
+    /*构造函数*/
+    public StudentInformation(){};
+
+//    public StudentInformation() {
+//        StudentID = "1922107122";
+//        if (count < 10)
+//            StudentID = StudentID + "0" + (count + "");
+//        else
+//            StudentID = StudentID + (count + "");
+//        count++;
+//    }
+
+    public void setName(String name) {
+        Name = name;
+    }
+
+
+
+    public void setSpecialty(String specialty) {
+        Specialty = specialty;
+    }
+
+    public void setMath(double math) {
+        Math = math;
+    }
+
+    public void setEnglish(double english) {
+        English = english;
+    }
+
+    public void setPolitical(double political) {
+        Political = political;
+    }
+
+    public void setProfessionalCourseResults(double professionalCourseResults) {
+        ProfessionalCourseResults = professionalCourseResults;
+    }
+
+
+
+    public String getName() {
+        return Name;
+    }
+
+    public String getSpecialty() {
+        return Specialty;
+    }
+
+    public double getMath() {
+        return Math;
+    }
+
+    public double getEnglish() {
+        return English;
+    }
+
+    public double getPolitical() {
+        return Political;
+    }
+
+    public double getProfessionalCourseResults() {
+        return ProfessionalCourseResults;
+    }
+
+
+
+
+}
