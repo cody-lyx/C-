@@ -1,0 +1,508 @@
+package Main;
+
+import java.io.*;
+import java.util.Scanner;
+
+public class OperationClass {
+    StudentInformation student[] = new StudentInformation[100];//初始存储为100个学生
+
+    public OperationClass() {
+        /*读取txt文件中的内容*/
+
+        int i = 0;
+
+        try { // 防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw
+
+            /* 读入TXT文件 */
+            String pathname = "E:\\35_Data_structure\\01_Student Information Management System\\成绩.txt"; // 绝对路径或相对路径都可以，这里是绝对路径，写入文件时演示相对路径
+
+            File filename = new File(pathname); // 要读取以上路径的input。txt文件
+            InputStreamReader reader = new InputStreamReader(
+                    new FileInputStream(filename)); // 建立一个输入流对象reader
+            BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言
+            String line = "";
+
+            int MaxID = 0;
+            do {
+                line = br.readLine();// 一次读入一行数据
+                if (line != null) {
+                    String[] intercept = line.split(",");
+                    StudentInformation temp=new StudentInformation();
+                    temp.setStudentID(Integer.valueOf(intercept[0]).intValue());//学号
+
+                    /*找出读取文件中最大的学号*/
+                    if (MaxID < Integer.valueOf(intercept[0]).intValue())
+                        MaxID = Integer.valueOf(intercept[0]).intValue();
+
+                    temp.setName(intercept[1]);//姓名
+
+                    temp.setSpecialty(intercept[2]);//专业
+
+                    temp.setMath(Double.valueOf(intercept[3].toString()));//数学成绩
+
+                    temp.setEnglish(Double.valueOf(intercept[4].toString()));//英语成绩
+
+                    temp.setPolitical(Double.valueOf(intercept[5].toString()));//政治成绩
+
+                    temp.setProfessionalCourseResults(Double.valueOf(intercept[6].toString()));//专业课成绩
+
+                    temp.setTotalScore(Double.valueOf(intercept[7].toString()));//总分
+
+//                    temp.setRank(Integer.valueOf(intercept[8]).intValue());
+                    student[i]=temp;
+                    i++;
+                }
+
+            } while (line != null);
+
+            StudentInformation.setI(MaxID+1);
+
+
+            Scanner input = new Scanner(System.in);
+            boolean judge = true;
+            while (judge == true) {
+                switch (Menu()) {
+                    case 1: //增加学生信息人数
+                        do {
+                            Addition(count());
+                            System.out.println("继续增加学生信息请按1，返回主菜单请按2；");
+
+                            int choice2 = input.nextInt();
+                            if (choice2 == 2)
+                                break;
+                        } while (true);
+                        break;
+                    case 2://据学号删除学生信息请输入
+                        do {
+                            Delete_ID(count());
+                            System.out.println("继续删除学生信息请按1，返回主菜单请按2；");
+                            int choice2 = input.nextInt();
+                            if (choice2 == 2)
+                                break;
+                        } while (true);
+                        break;
+
+                    case 3://总览所有人信息请输入
+                        Browse(count());
+                        break;
+
+                    case 4://根据学号查询信息请按
+                        do {
+                            Search_ID(count());
+                            System.out.println("继续查询学生信息请按1，返回主菜单请按2；");
+                            int choice2 = input.nextInt();
+                            if (choice2 == 2)
+                                break;
+                        } while (true);
+                        break;
+
+                    case 5://根据姓名查询个人信息请按
+                        do {
+                            Search_Name(count());
+                            System.out.println("继续查询学生信息请按1，返回主菜单请按2；");
+                            int choice2 = input.nextInt();
+                            if (choice2 == 2)
+                                break;
+                        } while (true);
+                        break;
+
+                    case 6://根据学号修改个人信息请按
+                        do {
+                            Modify(count());
+                            System.out.println("继续修改学生信息请按1，返回主菜单请按2；");
+                            int choice2 = input.nextInt();
+                            if (choice2 == 2)
+                                break;
+                        } while (true);
+                        break;
+                    default://退出程序请按按任意键
+                        judge = false;
+                }
+            }
+
+
+
+            /* 写入Txt文件 */
+            File writename = new File("E:\\35_Data_structure\\01_Student Information Management System\\成绩.txt"); // 相对路径，如果没有则要建立一个新的output。txt文件
+            writename.createNewFile(); // 创建新文件
+            BufferedWriter out = new BufferedWriter(new FileWriter(writename));
+            rankingUpdate(count());
+            for(int j=0;j<count();j++){
+                out.write(student[j].getStudentID()+","
+                        +student[j].getName()+","
+                        +student[j].getSpecialty()+","
+                        +student[j].getMath()+","
+                        +student[j].getEnglish()+","
+                        +student[j].getPolitical()+","
+                        +student[j].getProfessionalCourseResults()+","
+                        +student[j].getTotalScore()+","
+                        +student[j].getRank());
+                out.write("\n");
+            }
+            out.flush(); // 把缓存区内容压入文件
+            out.close(); // 最后记得关闭文件
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    /*主菜单函数，返回一个选择值，选择的是哪个功能*/
+    public int Menu() {
+        System.out.println("增加学生信息请输入 1");
+        System.out.println("根据学号删除学生信息请输入 2");
+        System.out.println("总览所有人信息请输入 3");
+        System.out.println("根据学号查询信息请按 4");
+        System.out.println("根据姓名查询个人信息请按 5");
+        System.out.println("根据学号修改个人信息请按 6");
+        System.out.println("退出程序请按 7");
+        Scanner scanner = new Scanner(System.in);
+        int input = scanner.nextInt();
+        return input;
+    }
+
+    /*双向冒泡排序，要求传递的参数是  student数组的长度*/
+    public void Sort_byTwoWayBubbling(int sum) {
+        int tail = sum - 1;
+        for (int i = 0; i < tail; ) {
+            for (int j = tail; j > i; --j) {
+                if (student[j].getTotalScore() > student[j - 1].getTotalScore()) {
+                    StudentInformation temp = student[j];
+                    student[j] = student[j - 1];
+                    student[j - 1] = temp;
+                }
+            }
+            ++i;
+            for (int j = i; j < tail; ++j) {
+                if (student[j].getTotalScore() < student[j + 1].getTotalScore()) {
+                    StudentInformation temp = student[j];
+                    student[j] = student[j + 1];
+                    student[j + 1] = temp;
+                }
+            }
+            tail--;
+        }
+    }
+
+    /*希尔排序，传递的参数是数组  student的长度*/
+    public void Sort_byShell(int length) {
+        StudentInformation temp;
+        for (int step = length / 2; step >= 1; step /= 2) {
+            for (int i = step; i < length; i++) {
+                temp = student[i];
+                int j = i - step;
+                while (j >= 0 && student[j].getTotalScore() > temp.getTotalScore()) {
+                    student[j + step] = student[j];
+                    j -= step;
+                }
+                student[j + step] = temp;
+            }
+        }
+    }
+
+    /*快速排序,传递的参数为数组  student的长度*/
+    public void Sort_by_quickSort(int length) {
+        if (length == 0) {
+            return;
+        }
+        quickSort(student, 0, length - 1);
+    }
+
+    public void quickSort(StudentInformation[] array, int low, int high) {
+        if (low >= high)
+            return;
+        int i = low, j = high;
+        StudentInformation index = array[i]; //取最左边的数为基准数
+        while (i < j) {
+            while (i < j && array[i].getTotalScore() >= index.getTotalScore())//向左寻找第一个小于index中的数
+                j--;
+            if (i < j) {
+                array[i++] = array[j];
+            }
+            while (i < j && array[i].getTotalScore() < index.getTotalScore())//向右寻找第一个大于index的数
+                i++;
+            if (i < j)
+                array[j--] = array[i];
+        }
+
+        array[i] = index;
+        quickSort(array, low, i - 1);
+        quickSort(array, i + 1, high);
+
+    }
+
+    /*堆排序*/
+    public void Sort_byHeap(int length) {
+        /*构造大根堆*/
+        StudentInformation[] arr = student;
+        heapInsert(arr, length);
+        int size = length;
+        while (size > 1) {
+            //固定最大值
+            swap(arr, 0, size - 1);
+            size--;
+
+            //构造大根堆
+            heapify(arr, 0, size);
+        }
+
+    }
+
+    /*构造大根堆  （通过新插入的数上升）*/
+    public static void heapInsert(StudentInformation[] arr, int length) {
+        for (int i = 0; i < length; i++) {
+            int currentIndex = i;//当前插入的索引
+            int fatherIndex = (currentIndex - 1) / 2;
+            /*如果当前插入的值大于其父节点的值，则交换值，并且将索引指向父节点
+            然后继续和上面的父节点的值比较，直到不大于父节点的，则退出循环
+             */
+            while (arr[currentIndex].getTotalScore() > arr[fatherIndex].getTotalScore()) {
+                //交换当前节点与父节点的值
+                swap(arr, currentIndex, fatherIndex);
+
+                //将当前索引指向父索引
+                currentIndex = fatherIndex;
+
+                //重新计算当前索引的夫索引
+                fatherIndex = (currentIndex - 1) / 2;
+
+            }
+        }
+    }
+
+    /*将剩余的数构造成大根堆（通过顶端数下降）*/
+    public static void heapify(StudentInformation[] arr, int index, int size) {
+        int left = 2 * index + 1;
+        int right = 2 * index + 2;
+        while (left < size) {
+            int largestIndex;
+            //判断孩子中较大的值的索引（要确保右孩子在size范围中）
+            if (arr[left].getTotalScore() < arr[right].getTotalScore() && right < size) {
+                largestIndex = right;
+            } else {
+                largestIndex = left;
+            }
+
+            //比较父节点的值与孩子中较大的值，并确定最大值的索引
+            if (arr[index].getTotalScore() > arr[largestIndex].getTotalScore()) {
+                largestIndex = index;
+            }
+
+            //如果父节点索引是最大值的索引，那已经是最大根堆了，则退出循环
+            if (index == largestIndex)
+                break;
+
+            //父节点不是最大值，与孩子中较大的值交换
+            swap(arr, largestIndex, index);
+
+            //将索引指向孩子中较大值的索引
+            index = largestIndex;
+
+            //重新计算交换之后的孩子的索引
+            left = 2 * index + 1;
+            right = 2 * index + 2;
+        }
+
+    }
+
+    /*交换数组中的两个元素的值*/
+    public static void swap(StudentInformation[] arr, int i, int j) {
+        StudentInformation temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+    /*排名的更新*/
+    public void rankingUpdate(int length) {
+        if (length < 1)
+            return;
+        if (length == 1) {
+            student[0].setRank(1);
+            return;
+        }
+        Sort_byTwoWayBubbling(length);
+        int m = 0;
+        student[0].setRank(1);
+        int count=1;
+        for (int i = 0; i < length; i++) {
+
+            if (i == 0 && student[i].getTotalScore() == student[i + 1].getTotalScore()){
+
+                count++;
+                continue;
+            }
+
+            if (i >= 1 && student[i - 1].getTotalScore() == student[i].getTotalScore()) {
+                student[i].setRank(student[i - 1].getRank());
+                count++;
+                continue;
+            }
+
+            m+=count;
+            student[i].setRank(m);
+//            m++;
+            count=1;
+        }
+    }
+
+    /*对学生信息的浏览  参数是数组的长度*/
+    public void Browse(int length) {
+        //进行一次排序
+//        Sort_byTwoWayBubbling(length);
+
+        rankingUpdate(length);//浏览之前对排名更新一下
+        System.out.println("学号\t\t姓名\t\t专业\t\t数 学\t\t英 语\t\t政 治\t\t专业分\t\t总  分\t\t排 名");
+        for (int i = 0; i < length; i++) {
+
+            student[i].print();
+        }
+
+    }
+
+    /*增加学生 参数为学生是人数     参数是学生的人数*/
+    public void Addition(int length) {
+        StudentInformation temp = new StudentInformation();
+        Scanner input = new Scanner(System.in);
+        System.out.println("请输入学生姓名");
+        String name = input.next();
+        temp.setName(name);
+
+        System.out.println("请输入学生专业：");
+        String specialty = input.next();
+        temp.setSpecialty(specialty);
+
+        System.out.println("请输入学生数学成绩");
+        double Math = input.nextDouble();
+        temp.setMath(Math);
+
+        System.out.println("请输入学生英语成绩：");
+        double English = input.nextDouble();
+        temp.setEnglish(English);
+
+        System.out.println("请输入学生政治成绩：");
+        double political = input.nextDouble();
+        temp.setPolitical(political);
+
+        System.out.println("请输入学生专业课成绩：");
+        double professionalCourse = input.nextDouble();
+        temp.setProfessionalCourseResults(professionalCourse);
+
+//        /*总分*/
+        double all = Math + English + political + professionalCourse;
+        temp.setTotalScore(all);
+
+        /*学号*/
+        temp.setStudentID();
+
+        student[length] = temp;
+
+        Sort_byTwoWayBubbling(length + 1);
+
+
+    }
+
+    /*按学号查找学生信息*/
+    public void Search_ID(int length) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("请输入查找的学号：");
+        int Id = scanner.nextInt();
+        boolean judge = false;
+        for (int i = 0; i < length; i++)
+            if (student[i].getStudentID() == Id) {
+                System.out.println("该学生的信息为：");
+                System.out.println("学号\t\t姓名\t\t专业\t\t数 学\t\t英 语\t\t政 治\t\t专业分\t\t总  分\t\t排 名");
+                student[i].print();
+                judge = true;
+                break;
+            }
+        if (judge == false)
+            System.out.println("无该学生的信息");
+
+    }
+
+    /*按姓名查找学生的信息*/
+    public void Search_Name(int length) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("请输入学生的姓名：");
+        String name = scanner.next();
+        boolean judge = false;
+        for (int i = 0; i < length; i++)
+            if (student[i].getName().equals(name) == true) {
+                System.out.println("该学生的信息为：");
+                System.out.println("学号\t\t姓名\t\t专业\t\t数 学\t\t英 语\t\t政 治\t\t专业分\t\t总  分\t\t排 名");
+                student[i].print();
+                judge = false;
+                break;
+            }
+        if (judge = false)
+            System.out.println("无该学生的信息");
+    }
+
+    /*按照学号删除学生的信息*/
+    public void Delete_ID(int length) {
+        Browse(length);
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("请输入学生的学号：");
+        int Id = scanner.nextInt();
+        boolean judge = false;
+        for (int i = 0; i < length; i++) {
+            if (student[i].getStudentID() == Id) {
+                judge = true;
+                for (int j = i; j <= length; j++)
+                    student[j] = student[j + 1];
+                break;
+            }
+        }
+        if (judge == false)
+            System.out.println("没有此学号的学生");
+    }
+
+    /*修改学生的成绩*/
+    public void Modify(int length) {
+        Browse(length);
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("请输入修改的学生的学号");
+        int Id = scanner.nextInt();
+        boolean judge = false;
+        for (int i = 0; i < length; i++) {
+            if (student[i].getStudentID() == Id) {
+                judge = true;
+                System.out.println("请输入数学成绩：");
+                double Math = scanner.nextDouble();
+                student[i].setMath(Math);
+
+                System.out.println("请输入英语成绩：");
+                double English = scanner.nextDouble();
+                student[i].setEnglish(English);
+
+                System.out.println("请输入政治成绩：");
+                double political = scanner.nextDouble();
+                student[i].setPolitical(political);
+
+                System.out.println("请输入专业课成绩");
+                double professionalCourse = scanner.nextDouble();
+                student[i].setProfessionalCourseResults(professionalCourse);
+
+                double all = Math + English + political + professionalCourse;
+                student[i].setTotalScore(all);
+            }
+        }
+
+        //修改之后刷新下名次
+        rankingUpdate(count());
+
+        if (judge == false)
+            System.out.println("没有此学号的学生！");
+    }
+
+    //返回的是学生的人数
+    public int count() {
+        int i = 0;
+        while (student[i] != null)
+            i++;
+        return i;
+    }
+
+}
