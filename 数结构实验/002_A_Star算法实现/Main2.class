@@ -1,0 +1,321 @@
+package project;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main2 {
+
+    List<List<Integer>> Star = new ArrayList<>();//初始方格
+    List<List<Integer>> Final = new ArrayList<>();//目标方格
+    List<List<List<Integer>>> Open_0 = new ArrayList<>();//Open_0 列表，用来存储所有可能
+    List<List<Integer>> Open = new ArrayList<>();//Open 列表，用来存储
+    List<List<List<Integer>>> Close = new ArrayList<>();//Close 列表
+
+    public Main2() {
+        System.out.println("请输入初始状态：");
+        Scanner scanner = new Scanner(System.in);
+        for (int i = 0; i < 3; i++) {
+            List<Integer> temp = new ArrayList<>();
+            for (int j = 0; j < 3; j++) {
+                int x = scanner.nextInt();
+                temp.add(x);
+            }
+            Star.add(temp);
+        }
+
+        System.out.println("请输入终止目标：");
+        for (int i = 0; i < 3; i++) {
+            List<Integer> temp = new ArrayList<>();
+            for (int j = 0; j < 3; j++) {
+                int x = scanner.nextInt();
+                temp.add(x);
+            }
+            Final.add(temp);
+        }
+        Open_0.add(Star);
+        while (Open_0.size() != 0) {
+            Open.clear();
+            faction3();//将Open_0中所有的G值传入Open中
+            sort();
+            List<List<Integer>> I = new ArrayList<>();
+            Insert(Open.get(0).get(1));
+            I = upDown();
+            if (!faction1(I)) {
+                print();
+                //输出函数
+                break;
+            }
+            Open_0.remove(0);
+            next_stemp(I);
+        }
+    }
+
+    //将下一种情况所有都移动到Open_0中,并将父节点的下表存储在第三行第四列中
+    public void insert(List<List<Integer>> temp) {
+        List<List<Integer>> result = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            List<Integer> temp2 = new ArrayList<>();
+            for (int j = 0; j < 3; j++) {
+                temp2.add(temp.get(i).get(j));
+            }
+            if (i == 2)
+                temp2.add(Close.size() - 1);
+            result.add(temp2);
+        }
+
+        Open_0.add(result);
+    }
+
+    void print() {
+        int i = Close.size() - 1;
+        List<List<List<Integer>>> temp = new ArrayList<>();
+        while (i != 0) {
+            List<List<Integer>> two = new ArrayList<>();
+            for (int k = 0; k < 3; k++) {
+                List<Integer> one = new ArrayList<>();
+                for (int j = 0; j < 3; j++) {
+                    one.add(Close.get(i).get(k).get(j));
+                }
+                two.add(one);
+            }
+            temp.add(two);
+            i = Close.get(i).get(2).get(3);
+        }
+
+        List<List<Integer>> two_0 = new ArrayList<>();
+        for (int k = 0; k < 3; k++) {
+            List<Integer> one = new ArrayList<>();
+            for (int j = 0; j < 3; j++) {
+                one.add(Close.get(i).get(k).get(j));
+            }
+            two_0.add(one);
+        }
+        temp.add(two_0);
+
+        for (int j = temp.size() - 1; j >= 0; j--) {
+            for (int k = 0; k < 3; k++) {
+                for (int l = 0; l < 3; l++) {
+                    System.out.print(temp.get(j).get(k).get(l) + "  ");
+                }
+                System.out.println();
+            }
+            System.out.println();
+
+        }
+    }
+
+    //将Open_0中依次对应的G值传递进入Open列表中
+    public void faction3() {
+        for (int i = 0; i < Open_0.size(); i++) {
+            List<Integer> temp = new ArrayList<>();
+
+            temp.add(faction3(Open_0.get(i)));
+            temp.add(i);
+            Open.add(temp);
+        }
+    }
+
+    //对Open_0中的G值按低到高排列
+    public void sort() {
+        for (int i = 0; i < Open.size(); i++) {//表示n次排序过程。
+            for (int j = 1; j < Open.size() - i; j++) {
+                if (Open.get(j - 1).get(0) > Open.get(j).get(0)) {//前面的数字大于后面的数字就交换
+                    //交换a[j-1]和a[j]
+                    List<Integer> temp = new ArrayList<>();
+                    temp = Open.get(j - 1);
+//                    test2.get(j-1).add(5);
+                    Open.set(j - 1, Open.get(j));
+                    Open.set(j, temp);
+
+                }
+            }
+        }
+
+    }
+
+    //将Open_0中G值最小的插到 Close中,参数temp是下标
+    void Insert(int i) {
+        List<List<Integer>> temp = new ArrayList<>();
+        temp = Open_0.get(i);
+        Close.add(temp);
+
+    }
+
+    //将三维传入到二维
+    public List<List<Integer>> upDown() {
+        List<List<Integer>> result = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            List<Integer> temp = new ArrayList<>();
+            for (int j = 0; j < 3; j++) {
+                temp.add(Open_0.get(Open.get(0).get(1)).get(i).get(j));
+            }
+            result.add(temp);
+        }
+        return result;
+    }
+
+    //判断是否出现目标方格,出现返回 true ,没出现返回false
+    public boolean faction1(List<List<Integer>> temp) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++)
+                if (temp.get(i).get(j) != Final.get(i).get(j))
+                    return true;
+        }
+        return false;
+    }
+
+    //判断是否出现过在Close列表和Open表中，出现返回false, 没出现返回true
+    public boolean faction2(List<List<Integer>> temp) {
+        int m = 0;
+        for (int i = 0; i < Open_0.size(); i++) {
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0; k < 3; k++) {
+                    if (Open_0.get(i).get(j).get(k) == temp.get(j).get(k))
+                        m++;
+                }
+            }
+            if (m == 9)
+                return false;
+            m = 0;
+        }
+        m = 0;
+        for (int i = 0; i < Close.size(); i++) {
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0; k < 3; k++) {
+                    if (Close.get(i).get(j).get(k) == temp.get(j).get(k))
+                        m++;
+                }
+            }
+            if (m == 9)
+                return false;
+            m = 0;
+        }
+        return true;
+    }
+
+    //计算G值,优先走G值最小的科目
+    public int faction3(List<List<Integer>> a) {
+        int m = 0;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (a.get(i).get(j) != Final.get(i).get(j))
+                    m++;
+            }
+        }
+        return m;
+    }
+
+    public void next_stemp(List<List<Integer>> I) {
+        int left = 0, right = 0;
+        while (I.get(left).get(right) != 0) {
+            right++;
+            if (right == 3) {
+                left++;
+                right = 0;
+            }
+        }
+        if (left == 0 && right == 0) {//左上角情况，只能下移或者左移
+            Move(I, left, right, 4);//下移
+            Move(I, left + 1, right, 3);//上移，复位
+
+            Move(I, left, right, 2);//右移
+            Move(I, left, right + 1, 1);//左移，复位
+
+        } else if (left == 0 && right == 2) {//在右上角，只能下移或者左移
+            Move(I, left, right, 4);//下移
+            Move(I, left + 1, right, 3);//上移，复位
+
+            Move(I, left, right, 1);//左移
+            Move(I, left, right - 1, 2);//右移，复位
+        } else if (left == 2 && right == 2) {//在右下角，只能上移或者左移
+            Move(I, left, right, 3);//上移
+            Move(I, left - 1, right, 4);//下移复位
+
+            Move(I, left, right, 1);//左移
+            Move(I, left, right - 1, 2);//右移，复位
+        } else if (left == 2 && right == 0) {//在左下角，只能上移或者右移
+            Move(I, left, right, 3);//上移
+            Move(I, left - 1, right, 4);//下移复位
+
+            Move(I, left, right, 2);//右移
+            Move(I, left, right + 1, 1);//左移，复位
+        } else if (left == 0 && right == 1) {//在上边，可以左移，右移和下移
+            Move(I, left, right, 4);//下移
+            Move(I, left + 1, right, 3);//上移，复位
+
+            Move(I, left, right, 1);//左移
+            Move(I, left, right - 1, 2);//右移，复位
+
+            Move(I, left, right, 2);//右移
+            Move(I, left, right + 1, 1);//左移，复位
+
+        } else if (left == 1 && right == 0) {//在左边，可以上移，下移和右移
+            Move(I, left, right, 3);//上移
+            Move(I, left - 1, right, 4);//下移复位
+
+            Move(I, left, right, 4);//下移
+            Move(I, left + 1, right, 3);//上移，复位
+
+            Move(I, left, right, 2);//右移
+            Move(I, left, right + 1, 1);//左移，复位
+        } else if (left == 1 && right == 2) {//在右边，可以上移，下移，和左移
+            Move(I, left, right, 3);//上移
+            Move(I, left - 1, right, 4);//下移复位
+
+            Move(I, left, right, 4);//下移
+            Move(I, left + 1, right, 3);//上移，复位
+
+            Move(I, left, right, 1);//左移
+            Move(I, left, right - 1, 2);//右移，复位
+        } else if (left == 2 && right == 1) {//在下边，可以上移，左移，右移
+            Move(I, left, right, 1);//左移
+            Move(I, left, right - 1, 2);//右移，复位
+
+            Move(I, left, right, 2);//右移
+            Move(I, left, right + 1, 1);//左移，复位
+
+            Move(I, left, right, 3);//上移
+            Move(I, left - 1, right, 4);//下移复位
+        } else {//可以上移、下移、左移、右移
+            Move(I, left, right, 3);//上移
+            Move(I, left - 1, right, 4);//下移复位
+
+            Move(I, left, right, 4);//下移
+            Move(I, left + 1, right, 3);//上移，复位
+
+            Move(I, left, right, 1);//左移
+            Move(I, left, right - 1, 2);//右移，复位
+
+            Move(I, left, right, 2);//右移
+            Move(I, left, right + 1, 1);//左移，复位
+        }
+    }
+
+    //移动函数
+    public void Move(List<List<Integer>> result, int left, int right, int choice) {
+        int temp = result.get(left).get(right);
+        switch (choice) {
+            case 1://左移
+                result.get(left).set(right, result.get(left).get(right - 1));
+                result.get(left).set(right - 1, temp);
+                break;
+            case 2://右移
+                result.get(left).set(right, result.get(left).get(right + 1));
+                result.get(left).set(right + 1, temp);
+                break;
+            case 3://上移
+                result.get(left).set(right, result.get(left - 1).get(right));
+                result.get(left - 1).set(right, temp);
+                break;
+            case 4://下移
+                result.get(left).set(right, result.get(left + 1).get(right));
+                result.get(left + 1).set(right, temp);
+                break;
+        }
+        if (faction2(result)) {
+            insert(result);
+        }
+    }
+
+}
